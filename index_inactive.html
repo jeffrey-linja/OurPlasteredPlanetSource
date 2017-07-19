@@ -1,12 +1,15 @@
-//Bump Charts
 <html>
 
 <head>
-    <link rel="stylesheet" href="bumps.css">
+    <!-- <link rel="stylesheet" href="bumps.css"> -->
     <script src="https://d3js.org/d3.v4.min.js"></script>
     <script src="https://unpkg.com/d3-bumps-chart@latest/build/d3-bumps-chart.js"></script>
 </head>
 <body>
+    <div id="countries-dropdown">
+
+    </div>
+
     <div id="bumps-chart">
         <svg width="100%" preserveAspectRatio="xMidYMin">
         </svg>
@@ -14,6 +17,37 @@
     <script>
         var chart = d3_bumps_chart.chart();
         chart.setup(document.getElementById('bumps-chart'));
+
+        d3.csv("test_data.csv", function(error, data) { 
+
+            // Nested data, organized by continent > country > beverage types
+            var mapData = d3.nest()
+                .key(function(d) { return (d.Continent); })
+                .key(function(d) { return (d.Country); })
+                .key(function(d) { return (d.Beverage_Types); })
+                .map(data);
+
+            // Creating the dropdown menu
+            var drop = d3.select("#countries-dropdown").append("select")
+                .attr("class", "select")
+                .on("change", onDrop);
+            var continents = mapData.keys().sort(),
+                options = drop.selectAll("option").data(continents)
+                .enter()
+                .append("option")
+                .text(function(d) { return d; })
+
+            var bumpData = d3_bumps_chart.joinEvents();
+            
+            //  //  //  // FUNCTIONS //  //  //  //
+
+            function onDrop() {
+                var selectValue = d3.select("select").property("value")
+                d3.select("#countries-dropdown").append("p");
+            }
+            
+        });
+
     </script>
 </body>
 </html>
