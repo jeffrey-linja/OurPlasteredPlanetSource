@@ -1,4 +1,14 @@
-From Godwin:
-"If you can't get the view to update itself automatically, you can get it to update after the user stops interacting/moving the mouse or even an update button. Also, take a look at this (https://www.edwardtufte.com/bboard/q-and-a-fetch-msg?msg_id=0003nk)."
+This is the repository for the Summer 2017, CS 4460 Group: Our Plastered Planet
 
-Fun fact: you can drag and create a region on each axis to highlight certain lines. Double click on the axis outside of the region to clear the selection.
+The team is consists of:
+
+|      Name      |        Email         |
+| Brandon Culver | bculv4@gatech.edu    |
+| Hannah Guthrie | hguthrie6@gatech.edu |
+| Jeffrey Lin    |  jlin329@gatech.edu  |
+
+
+The goal of this group is to explore the data for, and design a visualization that displays the alcohol consumption rates worldwide, per capita.
+
+This is implemented via d3.js v4 and associated libraries, which can be found in the index.html file of this project.
+
