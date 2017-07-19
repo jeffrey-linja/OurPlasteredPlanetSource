@@ -4,13 +4,19 @@ The team is consists of:
 
 |      Name      |        Email         |
 
-|----------------|----------------------|
+|---|---|
 
 | Brandon Culver | bculv4@gatech.edu    |
 
 | Hannah Guthrie | hguthrie6@gatech.edu |
 
 | Jeffrey Lin    |  jlin329@gatech.edu  |
+
+|Name   | Email  |
+|---|---|
+|Brandon Culver|bculv4@gatech.edu|
+|Hannah Guthrie|hguthrie6@gatech.edu|
+|Jeffrey Lin|jlin329@gatech.edu|
 
 
 The goal of this group is to explore the data for, and design a visualization that displays the alcohol consumption rates worldwide, per capita.
