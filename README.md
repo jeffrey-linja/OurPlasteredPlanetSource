@@ -3,8 +3,13 @@ This is the repository for the Summer 2017, CS 4460 Group: Our Plastered Planet
 The team is consists of:
 
 |      Name      |        Email         |
+
+|----------------|----------------------|
+
 | Brandon Culver | bculv4@gatech.edu    |
+
 | Hannah Guthrie | hguthrie6@gatech.edu |
+
 | Jeffrey Lin    |  jlin329@gatech.edu  |
 
 
