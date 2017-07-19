@@ -813,11 +813,11 @@ Sudan,Africa,Beer,,,,0.08,0.17,0.08,0.12,0.08,0.01,0,0,0,0,0,0
 Sudan,Africa,Wine,,,,0,0,0,0,0,0,0,0,0,0,0,0
 Sudan,Africa,Spirits,,,,0.36,0.29,0.27,0.26,0.29,0.3,0.27,0.27,0.31,0.35,0.27,0.26
 Sudan,Africa,Other alcoholic beverages,,,,1.68,1.32,1.64,1.62,1.64,1.59,1.28,1.32,1.43,1.24,1.54,1.5
-Suriname,South,All types,6.32,6.02,5.73,5.64,5.26,5.13,4.94,4.72,4.52,4.47,4.55,4.53,4.41,4.23,4.29
-Suriname,South,Beer,2.15,2.11,2.07,2.04,2.03,1.99,1.91,1.71,1.64,1.53,1.64,1.65,1.67,1.72,1.67
-Suriname,South,Wine,0.16,0.18,0.11,0.16,0.13,0.32,0.25,0.18,0.11,0.13,0.08,0.09,0.09,0.07,0.05
-Suriname,South,Spirits,3.8,3.51,3.33,3.24,2.93,2.67,2.63,2.69,2.63,2.72,2.75,2.78,2.65,2.44,2.56
-Suriname,South,Other alcoholic beverages,0.21,0.22,0.22,0.2,0.17,0.15,0.15,0.15,0.14,0.09,0.08,0,0,0,0.01
+Suriname,South America,All types,6.32,6.02,5.73,5.64,5.26,5.13,4.94,4.72,4.52,4.47,4.55,4.53,4.41,4.23,4.29
+Suriname,South America,Beer,2.15,2.11,2.07,2.04,2.03,1.99,1.91,1.71,1.64,1.53,1.64,1.65,1.67,1.72,1.67
+Suriname,South America,Wine,0.16,0.18,0.11,0.16,0.13,0.32,0.25,0.18,0.11,0.13,0.08,0.09,0.09,0.07,0.05
+Suriname,South America,Spirits,3.8,3.51,3.33,3.24,2.93,2.67,2.63,2.69,2.63,2.72,2.75,2.78,2.65,2.44,2.56
+Suriname,South America,Other alcoholic beverages,0.21,0.22,0.22,0.2,0.17,0.15,0.15,0.15,0.14,0.09,0.08,0,0,0,0.01
 Swaziland,Africa,All types,,,,5.2,4.93,4.9,4.87,5.55,5.53,5.08,5.78,5.65,5.52,6.72,7.19
 Swaziland,Africa,Beer,,,,1.67,1.69,1.56,1.48,1.59,1.65,1.73,1.65,1.66,1.59,1.57,1.82
 Swaziland,Africa,Wine,,,,0.06,0.05,0.04,0.02,0.04,0.01,0.02,0.02,0.05,0.16,0.26,0.61
@@ -918,11 +918,11 @@ United Republic of Tanzania,Africa,Beer,,0.81,0.77,0.7,0.67,0.69,0.76,0.77,0.64,
 United Republic of Tanzania,Africa,Wine,,0.02,0.02,0.01,0.01,0.02,0.01,0.01,0.01,0.01,0.01,0,0.01,0.01,0
 United Republic of Tanzania,Africa,Spirits,,0.1,0.21,0.1,0.24,0.2,0.18,0.15,0.15,0.15,0.12,0.09,0.11,0.09,0.1
 United Republic of Tanzania,Africa,Other alcoholic beverages,,3.27,2.98,3.22,3.27,3.06,2.49,3.47,3.27,3.22,3.18,1.75,2.8,3.5,3.28
-United States of America,North,All types,8.82,8.82,8.82,8.67,8.55,8.71,8.74,8.74,8.63,8.52,8.48,8.4,8.33,8.25,8.21
-United States of America,North,Beer,4.16,4.24,4.28,4.24,4.31,4.43,4.54,4.54,4.54,4.5,4.58,4.58,4.66,4.66,4.62
-United States of America,North,Wine,1.63,1.59,1.59,1.55,1.44,1.48,1.44,1.44,1.4,1.36,1.32,1.29,1.25,1.17,1.17
-United States of America,North,Spirits,3.03,2.99,2.95,2.88,2.8,2.8,2.76,2.76,2.69,2.65,2.57,2.54,2.42,2.42,2.42
-United States of America,North,Other alcoholic beverages,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+United States of America,North America,All types,8.82,8.82,8.82,8.67,8.55,8.71,8.74,8.74,8.63,8.52,8.48,8.4,8.33,8.25,8.21
+United States of America,North America,Beer,4.16,4.24,4.28,4.24,4.31,4.43,4.54,4.54,4.54,4.5,4.58,4.58,4.66,4.66,4.62
+United States of America,North America,Wine,1.63,1.59,1.59,1.55,1.44,1.48,1.44,1.44,1.4,1.36,1.32,1.29,1.25,1.17,1.17
+United States of America,North America,Spirits,3.03,2.99,2.95,2.88,2.8,2.8,2.76,2.76,2.69,2.65,2.57,2.54,2.42,2.42,2.42
+United States of America,North America,Other alcoholic beverages,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 Uruguay,South America,All types,6.03,5.82,5.77,5.97,6.21,6.67,6.76,6.67,6.58,6.35,5.66,5.11,5.86,6.48,6.65
 Uruguay,South America,Beer,1.94,1.97,2.01,1.95,1.9,1.88,1.86,1.61,1.49,1.35,1.1,0.86,1,1.19,1.37
 Uruguay,South America,Wine,3.13,3.25,3.18,3.43,3.72,3.85,3.97,4.15,4.19,4.23,3.88,3.61,4.12,4.36,4.44
