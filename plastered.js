@@ -1,36 +1,63 @@
-// Code goes here
-
 var margin = {
 		top: 30,
 		right: 10,
 		bottom: 10,
 		left: 10
 	},
-	width = 600 - margin.left - margin.right,
-	height = 200 - margin.top - margin.bottom;
-
-var x = d3.scaleBand().rangeRound([0, width]).padding(1),
-	y = {},
-	dragging = {};
-
+	width = 960 - margin.left - margin.right,
+	height = 500 - margin.top - margin.bottom;
 
 var line = d3.line(),
-	//axis = d3.axisLeft(x),
 	background,
 	foreground,
 	extents;
 
-var svg = d3.select("body").append("svg")
+var dropcont = d3.select('#dropcont'),
+	dropcount = d3.select('#dropcount');
+
+
+var svg = d3.select("svg")
 	.attr("width", width + margin.left + margin.right)
 	.attr("height", height + margin.top + margin.bottom)
 	.append("g")
-	.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+	.attr("transform", "translate(" + margin.left + "," + margin.top + ")"),
+
+	x = d3.scaleBand().rangeRound([0, width]).padding(1),
+	y = {},
+	dragging = {};
+
+var lobar = d3.select("#lobar");
+var hibar = d3.select("#hibar");
 
 d3.csv("countries.csv", function (error, countries) {
 	// Extract the list of dimensions and create a scale for each.
 	//countries[0] contains the header elements, then for all elements in the header
-	//different than "name" it creates and y axis in a dictionary by variable name
+	//different than the categorical elements it creates a y axis in a dictionary by variable name
+
+	var continents = d3.nest()
+		.key(function (d) {
+			return d['Continent'];
+		})
+		.entries(countries)
+
+	continents = continents.sort(function (a, b) {
+		if (a.key < b.key) return -1;
+		if (a.key > b.key) return 1;
+		return 0;
+	})
+
+	dropcont.selectAll('option')
+		.data(continents, function (d) {
+			return d;
+		})
+		.enter()
+		.append('option')
+		.html(function (d) {
+			return d.key
+		})
+
 	x.domain(dimensions = d3.keys(countries[0]).filter(function (d) {
+
 		if (d == "Country" || d == "Continent" || d == "Beverage_Types") {
 			return false;
 		}
@@ -107,7 +134,6 @@ d3.csv("countries.csv", function (error, countries) {
 		.each(function (d) {
 			d3.select(this).call(d3.axisLeft(y[d]));
 		})
-		//text does not show up because previous line breaks somehow
 		.append("text")
 		.style("text-anchor", "middle")
 		.attr("y", -9)
@@ -119,12 +145,25 @@ d3.csv("countries.csv", function (error, countries) {
 	g.append("g")
 		.attr("class", "brush")
 		.each(function (d) {
-			d3.select(this).call(y[d].brush = d3.brushY().extent([[-8, 0], [8, height]]).on("brush start", brushstart).on("brush", brush_parallel_chart));
+			d3.select(this)
+				.call(y[d].brush = d3.brushY()
+					.extent([[-8, 0], [8, height]])
+					.on("brush start", brushstart)
+					.on("brush", brush_parallel_chart));
 		})
 		.selectAll("rect")
 		.attr("x", -8)
 		.attr("width", 16);
 });
+
+function handleContinent(cont) {
+	// selecting a continent will populate the second dropdown with the corresponding countries
+}
+
+function handleCountry(country) {
+	//selection a country will add it to the display
+}
+
 
 function position(d) {
 	var v = dragging[d];
