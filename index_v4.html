@@ -32,11 +32,11 @@
     .axis text {
         text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
     }
-
 </style>
 
+<!-- ATTEMPTING TO CONVERT TO D3.V4 -->
 <body>
-    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://d3js.org/d3.v4.min.js"></script>
     <script>
         var margin = {
                 top: 30,
@@ -44,15 +44,16 @@
                 bottom: 10,
                 left: 10
             },
-            width = 960 - margin.left - margin.right;
+        width = 960 - margin.left - margin.right;
         height = 500 - margin.top - margin.bottom;
-
-        var x = d3.scale.ordinal().rangePoints([0, width], 1),
+        
+        var x = d3.scalePoint().range([0, width]).padding(1),
             y = {};
 
-        var line = d3.svg.line(),
-            axis = d3.svg.axis().orient("left"),
-            background,
+        var line = d3.line(),
+            axis = d3.axisLeft();
+
+        var background,
             foreground;
 
         var svg = d3.select("body").append("svg")
@@ -60,36 +61,43 @@
             .attr("height", height + margin.top + margin.bottom)
             .append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
+        
         d3.csv("test_data.csv", function(error, countries) {
-            x.domain(dimensions = d3.keys(countries[0]).filter(function(d) {
-                return d != "Country" && d != "Beverage_Types" && (y[d] = d3.scale.linear()
-                    .domain(d3.extent(countries, function(p) {
-                        return +p[d];
-                    }))
-                    .range([height, 0]));
-            }));
+            var yearsScale = d3.keys(countries[0]).filter(function(d) {
+                return ((d != "Country") && (d != "Beverage_Types") 
+                    && (y[d] = d3.scaleLinear()
+                        .domain(d3.extent(countries, function(p) {
+                            return +p[d];
+                        }))
+                        .range([height, 0])))
+                /* return an array containing the max and min of each year's per
+                capita consumption on a linear scale */
+            });
+            x.domain(yearsScale);
+
             background = svg.append("g")
                 .attr("class", "background")
                 .selectAll("path")
                 .data(countries)
                 .enter().append("path")
                 .attr("d", path);
-
+            // gray background lines
             foreground = svg.append("g")
                 .attr("class", "foreground")
                 .selectAll("path")
                 .data(countries)
                 .enter().append("path")
                 .attr("d", path);
+            // blue foreground lines
+
             var g = svg.selectAll(".dimension")
-                .data(dimensions)
+                .data(yearsScale)
                 .enter().append("g")
                 .attr("class", "dimension")
                 .attr("transform", function(d) {
                     return "translate(" + x(d) + ")";
                 })
-
+            // group element for each year's scale
             g.append("g")
                 .attr("class", "axis")
                 .each(function(d) {
@@ -101,36 +109,58 @@
                 .text(function(d) {
                     return d;
                 });
-
+            // axis, titled by year
             g.append("g")
                 .attr("class", "brush")
                 .each(function(d) {
-                    d3.select(this).call(y[d].brush = d3.svg.brush().y(y[d]).on("brush", brush));
+                    d3.select(this).call(d3.brushY()
+                    .on("brush", brush));
+                    // no need for ".y(y[d])"
+                    // (y[d].brush = 
                 })
                 .selectAll("rect")
                 .attr("x", -8)
                 .attr("width", 16);
+            // add and store a brush for each axis 
+            /* Brushes no longer store the active brush selection (i.e. the 
+            highlighted region; the brush’s position) internally. The brush’s
+            position is now stored on any elements to which the brush has been
+            applied. The brush’s position is available as event.selection 
+            within a brush event or by calling d3.brushSelection on a given
+            element. */
 
             function path(d) {
-                return line(dimensions.map(function(p) {
-                    return [x(p), y[p](d[p])]
+                return line(yearsScale.map(function(p) {
+                    return [x(p), y[p](d[p])];
                 }))
             }
 
             function brush() {
-                var actives = dimensions.filter(function(p) {
-                        return !y[p].brush.empty();
+                var actives = yearsScale.filter(function(p) {
+                        if (d3.brushSelection(y[p])) {
+                            return true;
+                            console.log("yep");
+                        }
+                        return false;
+                        console.log("nah");
+                        // (y[p].brushSelection() != null);
                     }),
+                    // returns a selection that only contains brushed areas
                     extents = actives.map(function(p) {
                         return y[p].brush.extent();
-                    })
+                    });
+
                 foreground.style("display", function(d) {
                     return actives.every(function(p, i) {
-                        return extents[i][0] <= d[p] && d[p] <= extents[i][1];
-                    }) ? null : "none";
+                            return (extents[i][0] <= d[p]) 
+                            && (d[p] <= extents[i][1])}) 
+                        ? null : "none";
+                    /* actives.every() returns true for every line that falls
+                    between the brush boundaries for each axis (multi-brushing
+                    functions), and thus displays (on the foreground) only the
+                    ones within those brushe bounds */
                 })
             }
         });
-
     </script>
 </body>
