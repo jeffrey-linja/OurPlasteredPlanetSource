@@ -13,6 +13,11 @@ svg {
 	stroke: steelblue;
 }
 
+.foreground path:hover {
+	stroke: orange;
+	stroke-width: 3px;
+}
+
 .brush .extent {
 	fill-opacity: .3;
 	stroke: #fff;

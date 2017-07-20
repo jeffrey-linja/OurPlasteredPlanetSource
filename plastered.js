@@ -12,8 +12,8 @@ var line = d3.line(),
 	foreground,
 	extents;
 
-var dropcont = d3.select('#dropcont'),
-	dropcount = d3.select('#dropcount');
+var dropcont = d3.select('#dropcont');
+var dropcount = d3.select('#dropcount');
 
 
 var svg = d3.select("svg")
@@ -40,6 +40,12 @@ d3.csv("countries.csv", function (error, countries) {
 		})
 		.entries(countries)
 
+	var allcountries = d3.nest()
+		.key(function (d) {
+			return d['Country'];
+		})
+		.entries(countries);
+
 	continents = continents.sort(function (a, b) {
 		if (a.key < b.key) return -1;
 		if (a.key > b.key) return 1;
@@ -51,13 +57,28 @@ d3.csv("countries.csv", function (error, countries) {
 			return d;
 		})
 		.enter()
-		.append('option')
-		.html(function (d) {
-			return d.key
+		.append("option")
+		.attr("value", function (d) {
+			return d.key;
 		})
+		.text(function (d) {
+			return d.key;
+		});
+
+	dropcount.selectAll('option')
+		.data(allcountries, function (d) {
+			return d;
+		})
+		.enter()
+		.append("option")
+		.attr("value", function (d) {
+			return d.key;
+		})
+		.text(function (d) {
+			return d.key;
+		});
 
 	x.domain(dimensions = d3.keys(countries[0]).filter(function (d) {
-
 		if (d == "Country" || d == "Continent" || d == "Beverage_Types") {
 			return false;
 		}
@@ -68,6 +89,10 @@ d3.csv("countries.csv", function (error, countries) {
 			.range([height, 0]);
 	}));
 
+	countries = countries.filter(function (d) {
+		return d.Beverage_Types == "All types";
+	})
+
 	extents = dimensions.map(function (p) {
 		return [0, 0];
 	});
@@ -77,7 +102,8 @@ d3.csv("countries.csv", function (error, countries) {
 		.attr("class", "background")
 		.selectAll("path")
 		.data(countries)
-		.enter().append("path")
+		.enter()
+		.append("path")
 		.attr("d", path);
 
 	// Add blue foreground lines for focus.
@@ -86,7 +112,9 @@ d3.csv("countries.csv", function (error, countries) {
 		.selectAll("path")
 		.data(countries)
 		.enter().append("path")
-		.attr("d", path);
+		.attr("d", path)
+		.on("mouseover", highlight);
+
 
 	// Add a group element for each dimension.
 	var g = svg.selectAll(".dimension")
@@ -154,16 +182,55 @@ d3.csv("countries.csv", function (error, countries) {
 		.selectAll("rect")
 		.attr("x", -8)
 		.attr("width", 16);
+
+	//near-global var for the continent-specific countries
+	var selectCountries;
+
+	//the on change behaviour for the continent dropdown
+	dropcont.on('change', function () {
+		var selected = this.value;
+		selectCountries = countries.filter(function (d) {
+			return d.Continent == selected;
+		})
+
+		console.log(selectCountries)
+		//update the country dropdown to only include countries
+		//from the selected continent
+
+		dropcount.selectAll('option')
+			.remove().exit()
+
+		dropcount.selectAll('option')
+			.data(selectCountries, function (d) {
+				return d;
+			})
+			.append('option')
+			.attr('value', function (d) {
+				return d.key;
+			})
+			.text(function (d) {
+				return d.key;
+			})
+	})
+
+	function updatePlot(cont) {
+		//updates parallel coordinates plot
+		selectCountries = countries.filter(function (d) {
+			return d.Continent == cont;
+		})
+		var selectForeground = svg.selectAll(".foreground")
+			.data(selectedCountries)
+	}
+
 });
 
-function handleContinent(cont) {
-	// selecting a continent will populate the second dropdown with the corresponding countries
-}
-
-function handleCountry(country) {
+function addCountry(country) {
 	//selection a country will add it to the display
 }
 
+function highlight() {
+	//on hover actions, highlight corresponding bars and paths
+}
 
 function position(d) {
 	var v = dragging[d];
