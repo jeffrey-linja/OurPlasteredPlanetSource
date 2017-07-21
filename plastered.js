@@ -29,6 +29,8 @@ var svg = d3.select("svg")
 var lobar = d3.select("#lobar");
 var hibar = d3.select("#hibar");
 
+
+
 d3.csv("countries.csv", function (error, countries) {
 	// Extract the list of dimensions and create a scale for each.
 	//countries[0] contains the header elements, then for all elements in the header
@@ -45,12 +47,6 @@ d3.csv("countries.csv", function (error, countries) {
 			return d['Country'];
 		})
 		.entries(countries);
-
-	var nestByContToCountry = d3.nest()
-		.key(function(d) { return d['Continent']; })
-		.key(function(d) { return d['Country']; })
-		.entries(countries);
-		// nested by continents, then countries, then everything else
 
 	continents = continents.sort(function (a, b) {
 		if (a.key < b.key) return -1;
@@ -195,19 +191,13 @@ d3.csv("countries.csv", function (error, countries) {
 	//the on change behaviour for the continent dropdown
 	dropcont.on('change', function () {
 		var selected = this.value;
-		
-		selectCountries = countries.filter(function (d) {
+		selectCountries = continents.filter(function (d) {
 			return d.Continent == selected;
 		})
-		
 
 		console.log(selectCountries)
 		//update the country dropdown to only include countries
 		//from the selected continent
-
-		var countriesList = selectCountries.filter(function (d) {
-			return d.Country;
-		})
 
 		dropcount.selectAll('option')
 			.remove().exit()
@@ -224,6 +214,23 @@ d3.csv("countries.csv", function (error, countries) {
 				return d.key;
 			})
 	})
+//ATTEMPT AT STACKED BARCHARTS FOLLOWING THE HORIZONTAL BAR CHART
+//CODE FROM BOSTOCK
+/*
+	var loStackedBar = {
+		draw: function(d) {
+			el = d.element,
+			stackKey = d.key,
+			data = d.data;
+
+        var stack = d3.stack().keys(stackKey)
+        	.offset(d3.stackOffsetNone);
+
+        var layers = stack(data);
+        	data.sort
+		}
+	}
+*/
 
 	function updatePlot(cont) {
 		//updates parallel coordinates plot
