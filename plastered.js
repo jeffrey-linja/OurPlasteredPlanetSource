@@ -46,6 +46,12 @@ d3.csv("countries.csv", function (error, countries) {
 		})
 		.entries(countries);
 
+	var nestByContToCountry = d3.nest()
+		.key(function(d) { return d['Continent']; })
+		.key(function(d) { return d['Country']; })
+		.entries(countries);
+		// nested by continents, then countries, then everything else
+
 	continents = continents.sort(function (a, b) {
 		if (a.key < b.key) return -1;
 		if (a.key > b.key) return 1;
@@ -189,13 +195,19 @@ d3.csv("countries.csv", function (error, countries) {
 	//the on change behaviour for the continent dropdown
 	dropcont.on('change', function () {
 		var selected = this.value;
+		
 		selectCountries = countries.filter(function (d) {
 			return d.Continent == selected;
 		})
+		
 
 		console.log(selectCountries)
 		//update the country dropdown to only include countries
 		//from the selected continent
+
+		var countriesList = selectCountries.filter(function (d) {
+			return d.Country;
+		})
 
 		dropcount.selectAll('option')
 			.remove().exit()
