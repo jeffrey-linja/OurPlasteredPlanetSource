@@ -179,66 +179,73 @@ d3.csv("countries.csv", function (error, countries) {
 				.call(y[d].brush = d3.brushY()
 					.extent([[-8, 0], [8, height]])
 					.on("brush start", brushstart)
-					.on("brush", brush_parallel_chart));
+					.on("brush", brush_parallel_chart)
+					/*.on("brush end", brushend)*/
+				);
 		})
 		.selectAll("rect")
 		.attr("x", -8)
 		.attr("width", 16);
 
-	//near-global var for the continent-specific countries
+	//near-global var for the continent-specific selected countries
 	var selectCountries;
 
 	//the on change behaviour for the continent dropdown
 	dropcont.on('change', function () {
 		var selected = this.value;
-		selectCountries = continents.filter(function (d) {
-			return d.Continent == selected;
+
+		selectCountries = countries.filter(function (d) {
+			return d['Continent'] == selected;
 		})
 
-		console.log(selectCountries)
 		//update the country dropdown to only include countries
 		//from the selected continent
 
 		dropcount.selectAll('option')
-			.remove().exit()
+			.remove();
 
 		dropcount.selectAll('option')
 			.data(selectCountries, function (d) {
 				return d;
 			})
+			.enter()
 			.append('option')
 			.attr('value', function (d) {
-				return d.key;
+				return d.Country;
 			})
 			.text(function (d) {
-				return d.key;
+				return d.Country;
 			})
 	})
-//ATTEMPT AT STACKED BARCHARTS FOLLOWING THE HORIZONTAL BAR CHART
-//CODE FROM BOSTOCK
-/*
-	var loStackedBar = {
-		draw: function(d) {
-			el = d.element,
-			stackKey = d.key,
-			data = d.data;
+	//ATTEMPT AT STACKED BARCHARTS FOLLOWING THE HORIZONTAL BAR CHART
+	//CODE FROM BOSTOCK
+	/*
+		var loStackedBar = {
+			draw: function(d) {
+				el = d.element,
+				stackKey = d.key,
+				data = d.data;
 
-        var stack = d3.stack().keys(stackKey)
-        	.offset(d3.stackOffsetNone);
+	        var stack = d3.stack().keys(stackKey)
+	        	.offset(d3.stackOffsetNone);
 
-        var layers = stack(data);
-        	data.sort
+	        var layers = stack(data);
+	        	data.sort
+			}
 		}
-	}
-*/
+	*/
 
 	function updatePlot(cont) {
 		//updates parallel coordinates plot
 		selectCountries = countries.filter(function (d) {
 			return d.Continent == cont;
 		})
-		var selectForeground = svg.selectAll(".foreground")
-			.data(selectedCountries)
+		var paths = svg.selectAll("path");
+		paths.remove();
+
+
+
+
 	}
 
 });
@@ -275,6 +282,7 @@ function brushstart() {
 // Handles a brush event, toggling the display of foreground lines.
 function brush_parallel_chart() {
 	for (var i = 0; i < dimensions.length; ++i) {
+		console.log(y[dimensions[i]].brush)
 		if (d3.event.target == y[dimensions[i]].brush) {
 			extents[i] = d3.event.selection.map(y[dimensions[i]].invert, y[dimensions[i]]);
 
@@ -289,4 +297,8 @@ function brush_parallel_chart() {
 			return extents[i][1] <= d[p] && d[p] <= extents[i][0];
 		}) ? null : "none";
 	});
+}
+
+function brushend() {
+
 }
