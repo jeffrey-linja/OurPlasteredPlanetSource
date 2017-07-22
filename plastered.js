@@ -207,8 +207,7 @@ d3.csv("countries.csv", function (error, countries) {
 			.data(selectCountries, function (d) {
 				return d;
 			})
-			.enter()
-			.append('option')
+			.enter().append('option')
 			.attr('value', function (d) {
 				return d.Country;
 			})
@@ -220,8 +219,14 @@ d3.csv("countries.csv", function (error, countries) {
 			// executed every time a different continent is selected
 
 	})
-	//ATTEMPT AT STACKED BARCHARTS FOLLOWING THE HORIZONTAL BAR CHART
-	//CODE FROM BOSTOCK
+
+	//  when selecting a country, executes the addCountry function
+	dropcount.on('change', function () {
+		var selectedCountry = this.value;
+		addCountry(selectedCountry);
+	})
+
+	//  //  //  //  STACKED BARCHARTS  //  //  //  //
 	/*
 		var loStackedBar = {
 			draw: function(d) {
@@ -299,11 +304,80 @@ d3.csv("countries.csv", function (error, countries) {
 		
 	}
 
+
+	function addCountry(cn) { // DOES NOT HAVE ADD TO BARCHART FUNCTIONALITY
+
+		var notSelectCountries = countries.filter(function (d) {
+				return d.Country != cn;
+		})
+		cn = countries.filter(function (d) {
+			return d.Country == cn;
+		})
+		/*
+		cn = d3.selectAll(countries).select(function () {
+			return this.cn;
+		})
+		*/
+		console.log(cn)
+
+		svg.selectAll("path").remove();
+		// remove everything
+
+	    g.append("g")
+			.attr("class", "axis")
+			.each(function (d) {
+				d3.select(this).call(d3.axisLeft(y[d]));
+			})
+			.append("text")
+			.style("text-anchor", "middle")
+			.attr("y", -9)
+			.text(function (d) {
+				return d;
+			});
+		// Add axis and title, again
+	/*
+		g.append("g")
+			.attr("class", "brush")
+			.each(function (d) {
+				d3.select(this)
+					.call(y[d].brush = d3.brushY()
+						.extent([[-8, 0], [8, height]])
+						.on("brush start", brushstart)
+						.on("brush", brush_parallel_chart)
+						//.on("brush end", brushend)
+					);
+			})
+			.selectAll("rect")
+			.attr("x", -8)
+			.attr("width", 16);
+	    // Add and store a brush for each axis, again. Probably don't need brushing
+	    // for one country
+	*/
+
+	    svg.append("g")
+			.attr("class", "background")
+			.selectAll("path")
+			.data(notSelectCountries)
+			.enter().append("path")
+			.attr("d", path);
+		// redraw all irrelevant countries as gray lines
+
+		svg.append("g")
+	        .attr("class", "foreground")
+	        .selectAll("path")
+	        .data(cn)
+	        .enter().append("path")
+	        .attr("d", path)
+	        .on("mouseover", highlight);
+	    // and redraw the only country as a blue line
+
+		// selecting a country will add it to the display
+
+	}
+
 });
 
-function addCountry(country) {
-	//selection a country will add it to the display
-}
+
 
 function highlight() {
 	//on hover actions, highlight corresponding bars and paths
