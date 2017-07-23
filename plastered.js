@@ -48,6 +48,14 @@ d3.csv("countries.csv", function (error, countries) {
 		})
 		.entries(countries);
 
+	var barsData = d3.nest()
+		.key(function(d) {
+			return d['Country'];
+		})
+		.key(function(d) {
+			return d['Beverage_Types'];
+		}).entries(countries);
+
 	continents = continents.sort(function (a, b) {
 		if (a.key < b.key) return -1;
 		if (a.key > b.key) return 1;
@@ -226,6 +234,16 @@ d3.csv("countries.csv", function (error, countries) {
 		addCountry(selectedCountry);
 	})
 
+
+    var stack = d3.stack().keys(barsData.keys)
+        .offset(d3.stackOffsetNone);
+    var margin = {top: 20, right: 20, bottom: 30, left: 50};
+    var width = 960 - margin.left - margin.right;
+    var height = 500 - margin.top - margin.bottom;
+    var xScale = d3.scaleLinear().rangeRound([0, width]);
+    var yScale = d3.scaleBand().rangeRound([height, 0]).padding(0.1);
+    var xAxis = d3.axisBottom(xScale);
+    var yAxis = d3.axisLeft(yScale).tickFormat();
 	//  //  //  //  STACKED BARCHARTS  //  //  //  //
 	/*
 		var loStackedBar = {
