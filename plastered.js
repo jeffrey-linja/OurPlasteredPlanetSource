@@ -238,9 +238,9 @@ d3.csv("countries.csv", function (error, countries) {
     var stack = d3.stack().keys(['All types', 'Beer', 'Wine', 'Spirits', 'Other alcoholic beverages'])
         .offset(d3.stackOffsetNone);
 
-    var margin = {top: 20, right: 20, bottom: 30, left: 50};
-    var width = 960 - margin.left - margin.right;
-    var height = 500 - margin.top - margin.bottom;
+    //var margin = {top: 20, right: 20, bottom: 30, left: 50};
+    //var width = 960 - margin.left - margin.right;
+    //var height = 500 - margin.top - margin.bottom;
     var xScale = d3.scaleLinear().rangeRound([0, width]);
     var yScale = d3.scaleBand().rangeRound([height, 0]).padding(0.1);
     var xAxis = d3.axisBottom(xScale);
@@ -255,7 +255,12 @@ d3.csv("countries.csv", function (error, countries) {
 	xScale.domain.([0, d3.max(layers[layers.length - 1], function(d) { 
 		return d[0] + d[1]; 
 	}) ]).nice();
-
+/*
+    svg.selectAll('#lobar')
+    	.data(layers)
+        .enter().append()
+*/
+	
 
 
 	//  //  //  //  STACKED BARCHARTS  //  //  //  //
