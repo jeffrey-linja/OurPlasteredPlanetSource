@@ -26,6 +26,11 @@ var svg = d3.select("svg")
 	y = {},
 	dragging = {};
 
+
+/*In example codes the term svg is overload. Here we have
+different terms for it.
+lobar.append(..) or hibar.append(..)
+*/
 var lobar = d3.select("#lobar");
 var hibar = d3.select("#hibar");
 
