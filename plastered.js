@@ -34,8 +34,6 @@ lobar.append(..) or hibar.append(..)
 var lobar = d3.select("#lobar");
 var hibar = d3.select("#hibar");
 
-
-
 d3.csv("countries.csv", function (error, countries) {
 	// Extract the list of dimensions and create a scale for each.
 	//countries[0] contains the header elements, then for all elements in the header
@@ -54,10 +52,10 @@ d3.csv("countries.csv", function (error, countries) {
 		.entries(countries);
 
 	var barsData = d3.nest()
-		.key(function(d) {
+		.key(function (d) {
 			return d['Country'];
 		})
-		.key(function(d) {
+		.key(function (d) {
 			return d['Beverage_Types'];
 		}).entries(countries);
 
@@ -92,6 +90,10 @@ d3.csv("countries.csv", function (error, countries) {
 		.text(function (d) {
 			return d.key;
 		});
+
+	//lower year bound for 
+	initStackedBarChart(2000 /*lower year bound*/ );
+
 
 	x.domain(dimensions = d3.keys(countries[0]).filter(function (d) {
 		if (d == "Country" || d == "Continent" || d == "Beverage_Types") {
@@ -228,8 +230,8 @@ d3.csv("countries.csv", function (error, countries) {
 				return d.Country;
 			});
 
-			updatePlot(selected);
-			// executed every time a different continent is selected
+		updatePlot(selected);
+		// executed every time a different continent is selected
 
 	})
 
@@ -239,51 +241,77 @@ d3.csv("countries.csv", function (error, countries) {
 		addCountry(selectedCountry);
 	})
 
-
-    var stack = d3.stack().keys(['All types', 'Beer', 'Wine', 'Spirits', 'Other alcoholic beverages'])
-        .offset(d3.stackOffsetNone);
-
-    //var margin = {top: 20, right: 20, bottom: 30, left: 50};
-    //var width = 960 - margin.left - margin.right;
-    //var height = 500 - margin.top - margin.bottom;
-    var xScale = d3.scaleLinear().rangeRound([0, width]);
-    var yScale = d3.scaleBand().rangeRound([height, 0]).padding(0.1);
-    var xAxis = d3.axisBottom(xScale);
-    var yAxis = d3.axisLeft(yScale);
-
-    var layers = stack(countries);
-	
-	yScale.domain(countries.map(function(d) {
-		return d['Country'];
-	}));
-	
-	xScale.domain.([0, d3.max(layers[layers.length - 1], function(d) { 
-		return d[0] + d[1]; 
-	}) ]).nice();
-/*
-    svg.selectAll('#lobar')
-    	.data(layers)
-        .enter().append()
-*/
-	
+	initStackedBarChart(2014 /*upper year bound*/ );
 
 
-	//  //  //  //  STACKED BARCHARTS  //  //  //  //
-	/*
-		var loStackedBar = {
-			draw: function(d) {
-				el = d.element,
-				stackKey = d.key,
-				data = d.data;
 
-	        var stack = d3.stack().keys(stackKey)
-	        	.offset(d3.stackOffsetNone);
 
-	        var layers = stack(data);
-	        	data.sort
-			}
-		}
-	*/
+	//initial setup of the stacked bar charts
+	function initStackedBarChart(year) {
+
+		var color = d3.scaleOrdinal(d3.schemeCategory20);
+
+		var bar = d3.select('svg').attr('width', width + margin.left + margin.right)
+			.attr('height', height + margin.top + margin.bottom)
+			.append('g')
+			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		var stack = d3.stack().keys(['All types', 'Beer', 'Wine', 'Spirits', 'Other alcoholic beverages'])
+			.offset(d3.stackOffsetNone);
+
+		//var margin = {top: 20, right: 20, bottom: 30, left: 50};
+		//var width = 960 - margin.left - margin.right;
+		//var height = 500 - margin.top - margin.bottom;
+		var xScale = d3.scaleLinear().rangeRound([0, width]);
+		var yScale = d3.scaleBand().rangeRound([height, 0]).padding(0.1);
+		var xAxis = d3.axisBottom(xScale);
+		var yAxis = d3.axisLeft(yScale);
+
+		var layers = stack(countries);
+
+		yScale.domain(countries.map(function (d) {
+			return d['Country'];
+		}));
+
+		xScale.domain([0, d3.max(layers[layers.length - 1], function (d) {
+			return d[0] + d[1];
+		})]).nice();
+
+		var layer = bar.selectAll(".layer")
+			.data(layers)
+			.enter().append("g")
+			.attr('class', 'layer')
+			.style('fill', function (d, i) {
+				return color(i);
+			});
+
+		layer.selectAll('rect')
+			.data(function (d) {
+				return d;
+			})
+			.enter().append('rect')
+			.attr('y', function (d) {
+				return yScale(d[0]);
+			})
+			.attr('x', function (d) {
+				return xScale(d[0]);
+			})
+			.attr('height', yScale.bandwidth())
+			.attr('width', function (d) {
+				return xScale(d[1]) - xScale(d[0]);
+			});
+
+		bar.append('g')
+			.attr('class', 'axis axis--x')
+			.attr('transform', 'translate(0," + (height+5) + ")')
+			.call(xAxis);
+
+		bar.append('g')
+			.attr('class', 'axis axis--y')
+
+			.attr('transform', 'translate(0,0)')
+			.call(yAxis);
+	}
+
 
 	function updatePlot(cont) {
 		//updates parallel coordinates plot
@@ -297,7 +325,7 @@ d3.csv("countries.csv", function (error, countries) {
 		svg.selectAll("path").remove();
 		// remove everything
 
-	    g.append("g")
+		g.append("g")
 			.attr("class", "axis")
 			.each(function (d) {
 				d3.select(this).call(d3.axisLeft(y[d]));
@@ -309,7 +337,7 @@ d3.csv("countries.csv", function (error, countries) {
 				return d;
 			});
 		// Add axis and title, again
-		
+
 		g.append("g")
 			.attr("class", "brush")
 			.each(function (d) {
@@ -324,10 +352,10 @@ d3.csv("countries.csv", function (error, countries) {
 			.selectAll("rect")
 			.attr("x", -8)
 			.attr("width", 16);
-	    // Add and store a brush for each axis, again
+		// Add and store a brush for each axis, again
 
 
-	    svg.append("g")
+		svg.append("g")
 			.attr("class", "background")
 			.selectAll("path")
 			.data(notSelectCountries)
@@ -336,21 +364,21 @@ d3.csv("countries.csv", function (error, countries) {
 		// redraw all irrelevant countries as gray lines
 
 		svg.append("g")
-	        .attr("class", "foreground")
-	        .selectAll("path")
-	        .data(selectCountries)
-	        .enter().append("path")
-	        .attr("d", path)
-	        .on("mouseover", highlight);
-	    // and redraw all selected countries as blue lines
-		
+			.attr("class", "foreground")
+			.selectAll("path")
+			.data(selectCountries)
+			.enter().append("path")
+			.attr("d", path)
+			.on("mouseover", highlight);
+		// and redraw all selected countries as blue lines
+
 	}
 
 
 	function addCountry(cn) { // DOES NOT HAVE ADD TO BARCHART FUNCTIONALITY
 
 		var notSelectCountries = countries.filter(function (d) {
-				return d.Country != cn;
+			return d.Country != cn;
 		})
 		cn = countries.filter(function (d) {
 			return d.Country == cn;
@@ -365,7 +393,7 @@ d3.csv("countries.csv", function (error, countries) {
 		svg.selectAll("path").remove();
 		// remove everything
 
-	    g.append("g")
+		g.append("g")
 			.attr("class", "axis")
 			.each(function (d) {
 				d3.select(this).call(d3.axisLeft(y[d]));
@@ -377,26 +405,26 @@ d3.csv("countries.csv", function (error, countries) {
 				return d;
 			});
 		// Add axis and title, again
-	/*
-		g.append("g")
-			.attr("class", "brush")
-			.each(function (d) {
-				d3.select(this)
-					.call(y[d].brush = d3.brushY()
-						.extent([[-8, 0], [8, height]])
-						.on("brush start", brushstart)
-						.on("brush", brush_parallel_chart)
-						//.on("brush end", brushend)
-					);
-			})
-			.selectAll("rect")
-			.attr("x", -8)
-			.attr("width", 16);
-	    // Add and store a brush for each axis, again. Probably don't need brushing
-	    // for one country
-	*/
+		/*
+			g.append("g")
+				.attr("class", "brush")
+				.each(function (d) {
+					d3.select(this)
+						.call(y[d].brush = d3.brushY()
+							.extent([[-8, 0], [8, height]])
+							.on("brush start", brushstart)
+							.on("brush", brush_parallel_chart)
+							//.on("brush end", brushend)
+						);
+				})
+				.selectAll("rect")
+				.attr("x", -8)
+				.attr("width", 16);
+		    // Add and store a brush for each axis, again. Probably don't need brushing
+		    // for one country
+		*/
 
-	    svg.append("g")
+		svg.append("g")
 			.attr("class", "background")
 			.selectAll("path")
 			.data(notSelectCountries)
@@ -405,13 +433,13 @@ d3.csv("countries.csv", function (error, countries) {
 		// redraw all irrelevant countries as gray lines
 
 		svg.append("g")
-	        .attr("class", "foreground")
-	        .selectAll("path")
-	        .data(cn)
-	        .enter().append("path")
-	        .attr("d", path)
-	        .on("mouseover", highlight);
-	    // and redraw the only country as a blue line
+			.attr("class", "foreground")
+			.selectAll("path")
+			.data(cn)
+			.enter().append("path")
+			.attr("d", path)
+			.on("mouseover", highlight);
+		// and redraw the only country as a blue line
 
 		// selecting a country will add it to the display
 
