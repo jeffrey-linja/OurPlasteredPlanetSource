@@ -191,7 +191,6 @@ d3.csv("countries.csv", function (error, countries) {
 					.extent([[-8, 0], [8, height]])
 					.on("brush start", brushstart)
 					.on("brush", brush_parallel_chart)
-					.on("brush end", brushend)
 				);
 		})
 		.selectAll("rect")
@@ -389,7 +388,6 @@ d3.csv("countries.csv", function (error, countries) {
 						.extent([[-8, 0], [8, height]])
 						.on("brush start", brushstart)
 						.on("brush", brush_parallel_chart)
-						.on("brush end", brushend)
 					);
 			})
 			.selectAll("rect")
