@@ -32,18 +32,25 @@ function createSlider(type) {
     			////// EFFECT WEIGHT //////
     		}))
 
-    	slider.insert("g",".track-overlay")
-    		.attr("class", "ticks")
-    		.attr("tansform", "translate(0, " + 18 + ") ")
-    		.selectAll("text")
-    		.data(sliderSetting.ticks(5))
-    		.enter().append("text")
-    		.attr("x", sliderSetting)
-    		.text(function(d) {
-    		    return d + "%";
-    		});
+	slider.insert("g",".track-overlay")
+		.attr("class", "ticks")
+		.attr("tansform", "translate(0, " + 18 + ") ")
+		.selectAll("text")
+		.data(sliderSetting.ticks(5))
+		.enter().append("text")
+		.attr("x", sliderSetting)
+		.text(function(d) {
+		    return d + "%";
+		});
 
-    	var handle = slider.insert("circle", ".track-overlay")
-    		.attr("class", "handle")
-    		.attr("r", 3);
+	var handle = slider.insert("circle", ".track-overlay")
+		.attr("class", "handle")
+		.attr("r", 3);
+
+    slider.each(function(d) {
+        d3.select(this)
+            .call(updateWeights, type) // calls the updateWeights function
+    }
 }
+
+function updateWeights(selection, )
