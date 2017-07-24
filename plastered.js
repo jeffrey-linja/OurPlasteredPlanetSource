@@ -1,10 +1,10 @@
 var margin = {
-		top: 30,
-		right: 10,
-		bottom: 10,
-		left: 10
+		top: 20,
+		right: 30,
+		bottom: 30,
+		left: 50
 	},
-	width = 960 - margin.left - margin.right,
+	width = 700 - margin.left - margin.right,
 	height = 500 - margin.top - margin.bottom;
 
 var line = d3.line(),
@@ -127,9 +127,7 @@ d3.csv("countries.csv", function (error, countries) {
 		.selectAll("path")
 		.data(countries)
 		.enter().append("path")
-		.attr("d", path)
-		.on("mouseover", highlight);
-
+		.attr("d", path);
 
 	// Add a group element for each dimension.
 	var g = svg.selectAll(".dimension")
@@ -248,21 +246,25 @@ d3.csv("countries.csv", function (error, countries) {
 
 		var svg = d3.select("#" + chart),
 			margin = {
-				top: 20,
-				right: 180,
+				top: 30,
+				right: 80,
 				bottom: 30,
-				left: 40
+				left: 50
 			},
 			width = +svg.attr("width") - margin.left - margin.right,
 			height = +svg.attr("height") - margin.top - margin.bottom,
 			g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 		var x = d3.scaleBand()
 			.rangeRound([0, width])
 			.padding(0.3)
 			.align(0.3);
+
 		var y = d3.scaleLinear()
 			.rangeRound([height, 0]);
-		var z = d3.scaleOrdinal(d3.schemeCategory20);
+
+		var z = d3.scaleOrdinal(d3.schemeCategory20c);
+
 		var stack = d3.stack();
 
 		d3.csv(year + ".csv ", type, function (error, data) {
@@ -298,10 +300,12 @@ d3.csv("countries.csv", function (error, countries) {
 					return y(d[0]) - y(d[1]);
 				})
 				.attr("width", x.bandwidth());
+
 			g.append("g")
 				.attr("class", "axis axis--x")
 				.attr("transform", "translate(0," + height + ")")
 				.call(d3.axisBottom(x));
+
 			g.append("g")
 				.attr("class", "axis axis--y")
 				.call(d3.axisLeft(y).ticks(10, "s"))
@@ -312,6 +316,7 @@ d3.csv("countries.csv", function (error, countries) {
 				.attr("text-anchor", "start")
 				.attr("fill", "#000")
 				.text("Liters, per capita");
+
 			var legend = g.selectAll(".legend")
 				.data(data.columns.slice(1))
 				.enter().append("g")
@@ -320,11 +325,13 @@ d3.csv("countries.csv", function (error, countries) {
 					return "translate(0," + i * 20 + ")";
 				})
 				.style("font", "10px sans-serif");
+
 			legend.append("rect")
 				.attr("x", width + 18)
 				.attr("width", 18)
 				.attr("height", 18)
 				.attr("fill", z);
+
 			legend.append("text")
 				.attr("x", width + 44)
 				.attr("y", 9)
@@ -333,6 +340,13 @@ d3.csv("countries.csv", function (error, countries) {
 				.text(function (d) {
 					return d;
 				});
+
+			g.append("text")
+				.attr("x", (width / 2))
+				.attr("y", 0 - (margin.top / 2))
+				.attr("text-anchor", "middle")
+				.style("font-size", "16px")
+				.text("Breakdown for Year: " + year);
 		});
 
 		function type(d, i, columns) {
@@ -403,7 +417,6 @@ d3.csv("countries.csv", function (error, countries) {
 
 	}
 
-
 	function addCountry(cn) { // DOES NOT HAVE ADD TO BARCHART FUNCTIONALITY
 
 		var notSelectCountries = countries.filter(function (d) {
@@ -412,14 +425,8 @@ d3.csv("countries.csv", function (error, countries) {
 		cn = countries.filter(function (d) {
 			return d.Country == cn;
 		})
-		/*
-		cn = d3.selectAll(countries).select(function () {
-			return this.cn;
-		})
-		*/
 
 		svg.selectAll("path").remove();
-		// remove everything
 
 		g.append("g")
 			.attr("class", "axis")
@@ -432,25 +439,6 @@ d3.csv("countries.csv", function (error, countries) {
 			.text(function (d) {
 				return d;
 			});
-		// Add axis and title, again
-		/*
-			g.append("g")
-				.attr("class", "brush")
-				.each(function (d) {
-					d3.select(this)
-						.call(y[d].brush = d3.brushY()
-							.extent([[-8, 0], [8, height]])
-							.on("brush start", brushstart)
-							.on("brush", brush_parallel_chart)
-							//.on("brush end", brushend)
-						);
-				})
-				.selectAll("rect")
-				.attr("x", -8)
-				.attr("width", 16);
-		    // Add and store a brush for each axis, again. Probably don't need brushing
-		    // for one country
-		*/
 
 		svg.append("g")
 			.attr("class", "background")
@@ -468,18 +456,9 @@ d3.csv("countries.csv", function (error, countries) {
 			.attr("d", path)
 			.on("mouseover", highlight);
 		// and redraw the only country as a blue line
-
-		// selecting a country will add it to the display
-
 	}
 
 });
-
-
-
-function highlight() {
-	//on hover actions, highlight corresponding bars and paths
-}
 
 function position(d) {
 	var v = dragging[d];

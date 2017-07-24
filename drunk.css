@@ -2,6 +2,16 @@ svg {
 	font: 10px sans-serif;
 }
 
+.serie {
+	padding: 0.4em;
+	outline: none;
+	border-radius: 9px;
+}
+
+.serie:hover {
+	box-shadow: 0 0 0 2px #f90;
+}
+
 .background path {
 	fill: none;
 	stroke: #ddd;
