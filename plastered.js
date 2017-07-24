@@ -16,7 +16,7 @@ var dropcont = d3.select('#dropcont');
 var dropcount = d3.select('#dropcount');
 
 
-var svg = d3.select("svg")
+var svg = d3.select("#b")
 	.attr("width", width + margin.left + margin.right)
 	.attr("height", height + margin.top + margin.bottom)
 	.append("g")
@@ -31,8 +31,6 @@ var svg = d3.select("svg")
 different terms for it.
 lobar.append(..) or hibar.append(..)
 */
-var lobar = d3.select("#lobar");
-var hibar = d3.select("#hibar");
 
 d3.csv("countries.csv", function (error, countries) {
 	// Extract the list of dimensions and create a scale for each.
@@ -92,19 +90,20 @@ d3.csv("countries.csv", function (error, countries) {
 		});
 
 	//lower year bound for 
-	initStackedBarChart(2000 /*lower year bound*/ );
+	initStackedBarChart('2000', "a");
 
 
-	x.domain(dimensions = d3.keys(countries[0]).filter(function (d) {
-		if (d == "Country" || d == "Continent" || d == "Beverage_Types") {
-			return false;
-		}
-		return y[d] = d3.scaleLinear()
-			.domain(d3.extent(countries, function (p) {
-				return +p[d];
-			}))
-			.range([height, 0]);
-	}));
+	x.domain(
+		dimensions = d3.keys(countries[0]).filter(function (d) {
+			if (d == "Country" || d == "Continent" || d == "Beverage_Types") {
+				return false;
+			}
+			return y[d] = d3.scaleLinear()
+				.domain(d3.extent(countries, function (p) {
+					return +p[d];
+				}))
+				.range([height, 0]);
+		}));
 
 	countries = countries.filter(function (d) {
 		return d.Beverage_Types == "All types";
@@ -194,7 +193,7 @@ d3.csv("countries.csv", function (error, countries) {
 					.extent([[-8, 0], [8, height]])
 					.on("brush start", brushstart)
 					.on("brush", brush_parallel_chart)
-					/*.on("brush end", brushend)*/
+					.on("brush end", brushend)
 				);
 		})
 		.selectAll("rect")
@@ -241,77 +240,107 @@ d3.csv("countries.csv", function (error, countries) {
 		addCountry(selectedCountry);
 	})
 
-	initStackedBarChart(2014 /*upper year bound*/ );
 
-
-
+	initStackedBarChart('2014', "c");
 
 	//initial setup of the stacked bar charts
-	function initStackedBarChart(year) {
+	function initStackedBarChart(year, chart) {
 
-		var color = d3.scaleOrdinal(d3.schemeCategory20);
+		var svg = d3.select("#" + chart),
+			margin = {
+				top: 20,
+				right: 180,
+				bottom: 30,
+				left: 40
+			},
+			width = +svg.attr("width") - margin.left - margin.right,
+			height = +svg.attr("height") - margin.top - margin.bottom,
+			g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+		var x = d3.scaleBand()
+			.rangeRound([0, width])
+			.padding(0.3)
+			.align(0.3);
+		var y = d3.scaleLinear()
+			.rangeRound([height, 0]);
+		var z = d3.scaleOrdinal(d3.schemeCategory20);
+		var stack = d3.stack();
 
-		var bar = d3.select('svg').attr('width', width + margin.left + margin.right)
-			.attr('height', height + margin.top + margin.bottom)
-			.append('g')
-			.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-		var stack = d3.stack().keys(['All types', 'Beer', 'Wine', 'Spirits', 'Other alcoholic beverages'])
-			.offset(d3.stackOffsetNone);
+		d3.csv(year + ".csv ", type, function (error, data) {
+			if (error) throw error;
 
-		//var margin = {top: 20, right: 20, bottom: 30, left: 50};
-		//var width = 960 - margin.left - margin.right;
-		//var height = 500 - margin.top - margin.bottom;
-		var xScale = d3.scaleLinear().rangeRound([0, width]);
-		var yScale = d3.scaleBand().rangeRound([height, 0]).padding(0.1);
-		var xAxis = d3.axisBottom(xScale);
-		var yAxis = d3.axisLeft(yScale);
+			x.domain(data.map(function (d) {
+				return d.Country;
+			}));
+			y.domain([0, d3.max(data, function (d) {
+				return d.total;
+			})]).nice();
+			z.domain(data.columns.slice(1));
 
-		var layers = stack(countries);
+			g.selectAll(".serie")
+				.data(stack.keys(data.columns.slice(1))(data))
+				.enter().append("g")
+				.attr("class", "serie")
+				.attr("fill", function (d) {
+					return z(d.key);
+				})
+				.selectAll("rect")
+				.data(function (d) {
+					return d;
+				})
+				.enter().append("rect")
+				.attr("x", function (d) {
+					return x(d.data.Country);
+				})
+				.attr("y", function (d) {
+					return y(d[1]);
+				})
+				.attr("height", function (d) {
+					return y(d[0]) - y(d[1]);
+				})
+				.attr("width", x.bandwidth());
+			g.append("g")
+				.attr("class", "axis axis--x")
+				.attr("transform", "translate(0," + height + ")")
+				.call(d3.axisBottom(x));
+			g.append("g")
+				.attr("class", "axis axis--y")
+				.call(d3.axisLeft(y).ticks(10, "s"))
+				.append("text")
+				.attr("x", 2)
+				.attr("y", y(y.ticks(10).pop()))
+				.attr("dy", "0.35em")
+				.attr("text-anchor", "start")
+				.attr("fill", "#000")
+				.text("Liters, per capita");
+			var legend = g.selectAll(".legend")
+				.data(data.columns.slice(1))
+				.enter().append("g")
+				.attr("class", "legend")
+				.attr("transform", function (d, i) {
+					return "translate(0," + i * 20 + ")";
+				})
+				.style("font", "10px sans-serif");
+			legend.append("rect")
+				.attr("x", width + 18)
+				.attr("width", 18)
+				.attr("height", 18)
+				.attr("fill", z);
+			legend.append("text")
+				.attr("x", width + 44)
+				.attr("y", 9)
+				.attr("dy", ".35em")
+				.attr("text-anchor", "start")
+				.text(function (d) {
+					return d;
+				});
+		});
 
-		yScale.domain(countries.map(function (d) {
-			return d['Country'];
-		}));
-
-		xScale.domain([0, d3.max(layers[layers.length - 1], function (d) {
-			return d[0] + d[1];
-		})]).nice();
-
-		var layer = bar.selectAll(".layer")
-			.data(layers)
-			.enter().append("g")
-			.attr('class', 'layer')
-			.style('fill', function (d, i) {
-				return color(i);
-			});
-
-		layer.selectAll('rect')
-			.data(function (d) {
-				return d;
-			})
-			.enter().append('rect')
-			.attr('y', function (d) {
-				return yScale(d[0]);
-			})
-			.attr('x', function (d) {
-				return xScale(d[0]);
-			})
-			.attr('height', yScale.bandwidth())
-			.attr('width', function (d) {
-				return xScale(d[1]) - xScale(d[0]);
-			});
-
-		bar.append('g')
-			.attr('class', 'axis axis--x')
-			.attr('transform', 'translate(0," + (height+5) + ")')
-			.call(xAxis);
-
-		bar.append('g')
-			.attr('class', 'axis axis--y')
-
-			.attr('transform', 'translate(0,0)')
-			.call(yAxis);
-	}
-
+		function type(d, i, columns) {
+			for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
+			d.total = t;
+			return d;
+		}
+	};
 
 	function updatePlot(cont) {
 		//updates parallel coordinates plot
@@ -346,7 +375,7 @@ d3.csv("countries.csv", function (error, countries) {
 						.extent([[-8, 0], [8, height]])
 						.on("brush start", brushstart)
 						.on("brush", brush_parallel_chart)
-						/*.on("brush end", brushend)*/
+						.on("brush end", brushend)
 					);
 			})
 			.selectAll("rect")
@@ -388,7 +417,6 @@ d3.csv("countries.csv", function (error, countries) {
 			return this.cn;
 		})
 		*/
-		console.log(cn)
 
 		svg.selectAll("path").remove();
 		// remove everything
@@ -477,7 +505,6 @@ function brushstart() {
 // Handles a brush event, toggling the display of foreground lines.
 function brush_parallel_chart() {
 	for (var i = 0; i < dimensions.length; ++i) {
-		console.log(y[dimensions[i]].brush)
 		if (d3.event.target == y[dimensions[i]].brush) {
 			extents[i] = d3.event.selection.map(y[dimensions[i]].invert, y[dimensions[i]]);
 
