@@ -27,15 +27,18 @@ var svg = d3.select("#b")
 	dragging = {};
 
 
-/*In example codes the term svg is overload. Here we have
-different terms for it.
-lobar.append(..) or hibar.append(..)
+/*
+In example codes the term svg is overloaded. Here we have different terms 
+for it. Lobar.append(..) or hibar.append(..)
 */
 
 d3.csv("countries.csv", function (error, countries) {
-	// Extract the list of dimensions and create a scale for each.
-	//countries[0] contains the header elements, then for all elements in the header
-	//different than the categorical elements it creates a y axis in a dictionary by variable name
+	/* 
+	Extract the list of dimensions and create a scale for each.
+	countries[0] contains the header elements, then for all elements in the 
+	header different than the categorical elements it creates a y axis 
+	in a dictionary by variable name
+	*/
 
 	var continents = d3.nest()
 		.key(function (d) {
@@ -89,7 +92,7 @@ d3.csv("countries.csv", function (error, countries) {
 			return d.key;
 		});
 
-	//lower year bound for 
+	// lower year bound. Hardcoded for north america.
 	initStackedBarChart('2000', "a");
 
 
@@ -113,7 +116,7 @@ d3.csv("countries.csv", function (error, countries) {
 		return [0, 0];
 	});
 
-	// Add grey background lines for context.
+	// Add grey background lines for context
 	background = svg.append("g")
 		.attr("class", "background")
 		.selectAll("path")
@@ -121,7 +124,7 @@ d3.csv("countries.csv", function (error, countries) {
 		.enter().append("path")
 		.attr("d", path);
 
-	// Add blue foreground lines for focus.
+	// Add blue foreground lines for focus
 	foreground = svg.append("g")
 		.attr("class", "foreground")
 		.selectAll("path")
@@ -129,7 +132,7 @@ d3.csv("countries.csv", function (error, countries) {
 		.enter().append("path")
 		.attr("d", path);
 
-	// Add a group element for each dimension.
+	// Add a group element for each dimension
 	var g = svg.selectAll(".dimension")
 		.data(dimensions)
 		.enter().append("g")
@@ -169,7 +172,7 @@ d3.csv("countries.csv", function (error, countries) {
 					.duration(0)
 					.attr("visibility", null);
 			}));
-	// Add an axis and title.
+	// add an axis and title
 	g.append("g")
 		.attr("class", "axis")
 		.each(function (d) {
@@ -182,7 +185,7 @@ d3.csv("countries.csv", function (error, countries) {
 			return d;
 		});
 
-	// Add and store a brush for each axis.
+	// add and store a brush for each axis
 	g.append("g")
 		.attr("class", "brush")
 		.each(function (d) {
@@ -197,10 +200,10 @@ d3.csv("countries.csv", function (error, countries) {
 		.attr("x", -8)
 		.attr("width", 16);
 
-	//near-global var for the continent-specific selected countries
+	// near-global var for the continent-specific selected countries
 	var selectCountries;
 
-	//the on change behaviour for the continent dropdown
+	// the on change behaviour for the continent dropdown
 	dropcont.on('change', function () {
 		var selected = this.value;
 
@@ -208,8 +211,8 @@ d3.csv("countries.csv", function (error, countries) {
 			return d['Continent'] == selected;
 		})
 
-		//update the country dropdown to only include countries
-		//from the selected continent
+		// update the country dropdown to only include countries
+		// from the selected continent
 
 		dropcount.selectAll('option')
 			.remove();
@@ -231,16 +234,16 @@ d3.csv("countries.csv", function (error, countries) {
 
 	})
 
-	//  when selecting a country, executes the addCountry function
+	// when selecting a country, executes the addCountry function
 	dropcount.on('change', function () {
 		var selectedCountry = this.value;
 		addCountry(selectedCountry);
 	})
 
-
+	// upper year bound. hardcoded for North America
 	initStackedBarChart('2014', "c");
 
-	//initial setup of the stacked bar charts
+	// initial setup of the stacked bar charts
 	function initStackedBarChart(year, chart) {
 
 		var svg = d3.select("#" + chart),
@@ -252,7 +255,9 @@ d3.csv("countries.csv", function (error, countries) {
 			},
 			width = +svg.attr("width") - margin.left - margin.right,
 			height = +svg.attr("height") - margin.top - margin.bottom,
-			g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+			g = svg.append("g")
+				.attr("transform", 
+					"translate(" + margin.left + "," + margin.top + ")");
 
 		var x = d3.scaleBand()
 			.rangeRound([0, width])
@@ -262,7 +267,7 @@ d3.csv("countries.csv", function (error, countries) {
 		var y = d3.scaleLinear()
 			.rangeRound([height, 0]);
 
-		var z = d3.scaleOrdinal(d3.schemeCategory20c);
+		var z = d3.scaleOrdinal(d3.schemeCategory10);
 
 		var stack = d3.stack();
 
@@ -356,7 +361,7 @@ d3.csv("countries.csv", function (error, countries) {
 	};
 
 	function updatePlot(cont) {
-		//updates parallel coordinates plot
+		// updates parallel coordinates plot
 		selectCountries = countries.filter(function (d) {
 			return d.Continent == cont;
 		})
@@ -415,7 +420,8 @@ d3.csv("countries.csv", function (error, countries) {
 
 	}
 
-	function addCountry(cn) { // DOES NOT HAVE ADD TO BARCHART FUNCTIONALITY
+	function addCountry(cn) { 
+		// DOES NOT HAVE ADD TO BARCHART FUNCTIONALITY
 
 		var notSelectCountries = countries.filter(function (d) {
 			return d.Country != cn;
@@ -455,6 +461,69 @@ d3.csv("countries.csv", function (error, countries) {
 			.on("mouseover", highlight);
 		// and redraw the only country as a blue line
 	}
+
+	//  //  // sliders for weights //  //  //
+
+	var slider = d3.select("#dropdiv").append("g");
+
+	createSlider("beer")
+
+	function createSlider(type) {
+	    var sliderSetting = d3.scaleLinear()
+	    	.domain([0, 1])
+	    	.range([0, 50])
+	    	.clamp(true);
+
+	    slider.append("g")
+	    	.attr("class", "slider")
+	    	.attr("transform", 
+	    		"translate(50, 10)");
+
+	    slider.append("line")
+	    	.attr("class", "track")
+	    	.attr("x1", sliderSetting.range()[0])
+	    	.attr("x2", sliderSetting.range()[1])
+	    	.select(function() {
+	    		return this.parentNode.appendChild(
+	    		this.cloneNode(true));
+	    	})
+	    	.attr("class", "track-inset")
+	    	.select(function() {
+	    		return this.parentNode.appendChild(
+	    		this.cloneNode(true));
+	    	})
+	    	.attr("class", "track-overlay")
+	    	.call(d3.drag()
+	    		.on("start.interrupt", function() {
+	    			slider.interrupt();
+	    		})
+	    		.on("start drag", function() {
+	    			updateWeights(this, type); // update weightings
+	    		}))
+
+		slider.insert("g",".track-overlay")
+			.attr("class", "ticks")
+			.attr("tansform", "translate(0, 18)")
+			.selectAll("text")
+			.data(sliderSetting.ticks(5))
+			.enter().append("text")
+			.attr("x", sliderSetting)
+			.text(function(d) {
+			    return d + "%";
+			});
+
+		var handle = slider.insert("circle", ".track-overlay")
+			.attr("class", "handle")
+			.attr("r", 3);
+
+	}
+
+	function updateWeights(selection, type) {
+		// update individual categories given the beverage type
+	}
+
+
+	//  //  //  //  //  //
 
 });
 
